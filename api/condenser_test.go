@@ -173,3 +173,21 @@ func TestLookupAccounts(t *testing.T) {
 
 	t.Logf("%s: %+v", MethodLookupAccounts, accounts)
 }
+
+func TestGetWithdrawRoutes(t *testing.T) {
+	resp, err := GetWithdrawRoutes(client, "clayop", "all")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%s: %+v", MethodGetWithdrawRoutes, resp)
+}
+
+func TestGetAccountBandwidth(t *testing.T) {
+	resp, err := GetAccountBandwidth(client, "clayop", "forum")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%s: %+v", MethodGetAccountBandwidth, resp)
+}

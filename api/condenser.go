@@ -39,10 +39,10 @@ var (
 
 	MethodGetOwnerHistory = "get_owner_history"
 
-	// (get_recovery_request)
-	// (get_escrow)
-	// (get_withdraw_routes)
-	// (get_account_bandwidth)
+	MethodGetRecoveryRequest  = "get_recovery_request"
+	MethodGetEscrow           = "get_escrow"
+	MethodGetWithdrawRoutes   = "get_withdraw_routes"
+	MethodGetAccountBandwidth = "get_account_bandwidth"
 	// (get_savings_withdraw_from)
 	// (get_savings_withdraw_to)
 	// (get_vesting_delegations)
@@ -434,6 +434,55 @@ func LookupAccountNames(client gosteem.Client, accounts ...string) ([]Account, e
 func LookupAccounts(client gosteem.Client, lowerBoundName string, limit int) ([]string, error) {
 	var resp []string
 	err := client.Call(MethodLookupAccounts, []interface{}{lowerBoundName, limit}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetRecoveryRequest(client gosteem.Client, account string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetRecoveryRequest, []interface{}{account}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetEscrow(client gosteem.Client, account string, escrowID int) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetEscrow, []interface{}{account, escrowID}, &resp)
+
+	return resp, err
+}
+
+type WithdrawRoute struct {
+	AutoVest    bool   `json:"auto_vest"`
+	FromAccount string `json:"from_account"`
+	ID          int64  `json:"id"`
+	Percent     int64  `json:"percent"`
+	ToAccount   string `json:"to_account"`
+}
+
+// withdrawRouteType is incoming,outgoing,all
+func GetWithdrawRoutes(client gosteem.Client, account string, withdrawRouteType string) ([]WithdrawRoute, error) {
+	var resp []WithdrawRoute
+	err := client.Call(MethodGetWithdrawRoutes, []interface{}{account, withdrawRouteType}, &resp)
+
+	return resp, err
+}
+
+type GetAccountBandwidthResponse struct {
+	Account             string `json:"account"`
+	AverageBandwidth    string `json:"average_bandwidth"`
+	ID                  int64  `json:"id"`
+	LastBandwidthUpdate string `json:"last_bandwidth_update"`
+	LifetimeBandwidth   string `json:"lifetime_bandwidth"`
+	Type                string `json:"type"`
+}
+
+// post, forum, market
+func GetAccountBandwidth(client gosteem.Client, account string, bandwithType string) (*GetAccountBandwidthResponse, error) {
+	var resp = &GetAccountBandwidthResponse{}
+	err := client.Call(MethodGetAccountBandwidth, []interface{}{account, bandwithType}, &resp)
 
 	return resp, err
 }
