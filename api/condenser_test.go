@@ -191,3 +191,66 @@ func TestGetAccountBandwidth(t *testing.T) {
 
 	t.Logf("%s: %+v", MethodGetAccountBandwidth, resp)
 }
+
+func TestGetWitnesses(t *testing.T) {
+	resp, err := GetWitnesses(client, "231", "12286")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%s: %+v", MethodGetWitnesses, resp)
+}
+
+func TestGetWitnessByAccount(t *testing.T) {
+	resp, err := GetWitnessByAccount(client, "steemit")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%s: %+v", MethodGetWitnesses, resp)
+}
+
+func TestGetWitnessesByVote(t *testing.T) {
+	resp, err := GetWitnessesByVote(client, "steemit", 10)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%s: %+v", MethodGetWitnesses, resp)
+}
+
+func TestLookupWitnessAccounts(t *testing.T) {
+	resp, err := LookupWitnessAccounts(client, "steem", 10)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%s: %+v", MethodGetWitnesses, resp)
+}
+
+func TestGetWitnessCount(t *testing.T) {
+	resp, err := GetWitnessCount(client)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%s: %+v", MethodGetWitnessCount, resp)
+}
+
+func TestGetActiveVotes(t *testing.T) {
+	resp, err := GetActiveVotes(client, "smooth", "test")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%s: %+v", MethodGetWitnessCount, resp)
+}
+
+func TestGetAccountVotes(t *testing.T) {
+	resp, err := GetAccountVotes(client, "smooth")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%s: %+v", MethodGetWitnessCount, resp)
+}

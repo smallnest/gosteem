@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 
 	"github.com/smallnest/gosteem"
@@ -39,34 +40,36 @@ var (
 
 	MethodGetOwnerHistory = "get_owner_history"
 
-	MethodGetRecoveryRequest  = "get_recovery_request"
-	MethodGetEscrow           = "get_escrow"
-	MethodGetWithdrawRoutes   = "get_withdraw_routes"
-	MethodGetAccountBandwidth = "get_account_bandwidth"
-	// (get_savings_withdraw_from)
-	// (get_savings_withdraw_to)
-	// (get_vesting_delegations)
-	// (get_expiring_vesting_delegations)
-	// (get_witnesses)
-	// (get_conversion_requests)
-	// (get_witness_by_account)
-	// (get_witnesses_by_vote)
-	// (lookup_witness_accounts)
-	// (get_witness_count)
-	// (get_open_orders)
-	// (get_transaction_hex)
-	// (get_transaction)
-	// (get_required_signatures)
-	// (get_potential_signatures)
-	// (verify_authority)
-	// (verify_account_authority)
-	// (get_active_votes)
-	// (get_account_votes)
+	MethodGetRecoveryRequest            = "get_recovery_request"
+	MethodGetEscrow                     = "get_escrow"
+	MethodGetWithdrawRoutes             = "get_withdraw_routes"
+	MethodGetAccountBandwidth           = "get_account_bandwidth"
+	MethodGetSavingsWithdrawFrom        = "get_savings_withdraw_from"
+	MethodGetSavingsWithdrawTo          = "get_savings_withdraw_to"
+	MethodGetVestingDelegations         = "get_vesting_delegations"
+	MethodGetExpiringVestingDelegations = "get_expiring_vesting_delegations"
+	MethodGetWitnesses                  = "get_witnesses"
+	MethodGetConversionRequests         = "get_conversion_requests"
+
+	MethodGetWitnessByAccount    = "get_witness_by_account"
+	MethodGetWitnessesByVote     = "get_witnesses_by_vote"
+	MethodLookupWitnessAccounts  = "lookup_witness_accounts"
+	MethodGetWitnessCount        = "get_witness_count"
+	MethodGetOpenOrders          = "get_open_orders"
+	MethodGetTransactionHex      = "get_transaction_hex"
+	MethodGetTransaction         = "get_transaction"
+	MethodGetRequiredSignatures  = "get_required_signatures"
+	MethodGetPotentialSignatures = "get_potential_signatures"
+	MethodVerifyAuthority        = "verify_authority"
+	MethodVerifyAccountAuthority = "verify_account_authority"
+	MethodGetActiveVotes         = "get_active_votes"
+	MethodGetAccountVotes        = "get_account_votes"
 	// (get_content)
 	// (get_content_replies)
 	// (get_tags_used_by_author)
 	// (get_post_discussions_by_payout)
 	// (get_comment_discussions_by_payout)
+
 	// (get_discussions_by_trending)
 	// (get_discussions_by_created)
 	// (get_discussions_by_active)
@@ -80,21 +83,26 @@ var (
 	// (get_discussions_by_promoted)
 	// (get_replies_by_last_update)
 	// (get_discussions_by_author_before_date)
+
 	MethodGetAccountHistory = "get_account_history"
 
 	// (broadcast_transaction)
 	// (broadcast_transaction_synchronous)
 	// (broadcast_block)
+
 	// (get_followers)
 	// (get_following)
 	// (get_follow_count)
+
 	// (get_feed_entries)
 	// (get_feed)
+
 	// (get_blog_entries)
 	// (get_blog)
 	// (get_account_reputations)
 	// (get_reblogged_by)
 	// (get_blog_authors)
+
 	// (get_ticker)
 	// (get_volume)
 	// (get_order_book)
@@ -103,6 +111,22 @@ var (
 	// (get_market_history)
 	// (get_market_history_buckets)
 )
+
+var tagMethods = map[string]string{
+	"active":   "get_discussions_by_active",
+	"blog":     "get_discussions_by_blog",
+	"cashout":  "get_discussions_by_cashout",
+	"children": "get_discussions_by_children",
+	"comments": "get_discussions_by_comments",
+	"created":  "get_discussions_by_created",
+	"feed":     "get_discussions_by_feed",
+	"hot":      "get_discussions_by_hot",
+	"payout":   "get_discussions_by_payout",
+	"promoted": "get_discussions_by_promoted",
+	"trending": "get_discussions_by_trending",
+	"update":   "get_discussions_by_update",
+	"votes":    "get_discussions_by_votes",
+}
 
 type GetVersionResponse struct {
 	BlockchainVersion string `json:"blockchain_version"`
@@ -483,6 +507,269 @@ type GetAccountBandwidthResponse struct {
 func GetAccountBandwidth(client gosteem.Client, account string, bandwithType string) (*GetAccountBandwidthResponse, error) {
 	var resp = &GetAccountBandwidthResponse{}
 	err := client.Call(MethodGetAccountBandwidth, []interface{}{account, bandwithType}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetSavingsWithdrawFrom(client gosteem.Client, account string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetSavingsWithdrawFrom, []interface{}{account}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetSavingsWithdrawTo(client gosteem.Client, account string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetSavingsWithdrawTo, []interface{}{account}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetVestingDelegations(client gosteem.Client, account, fromAccount string, limit int) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetVestingDelegations, []interface{}{account, fromAccount, limit}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetExpiringVestingDelegations(client gosteem.Client, account, start string, limit int) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetExpiringVestingDelegations, []interface{}{account, start, limit}, &resp)
+
+	return resp, err
+}
+
+type Witnesses struct {
+	Created               string `json:"created"`
+	HardforkTimeVote      string `json:"hardfork_time_vote"`
+	HardforkVersionVote   string `json:"hardfork_version_vote"`
+	ID                    int64  `json:"id"`
+	LastAslot             int64  `json:"last_aslot"`
+	LastConfirmedBlockNum int64  `json:"last_confirmed_block_num"`
+	LastSbdExchangeUpdate string `json:"last_sbd_exchange_update"`
+	LastWork              string `json:"last_work"`
+	Owner                 string `json:"owner"`
+	PowWorker             int64  `json:"pow_worker"`
+	Props                 struct {
+		AccountCreationFee string `json:"account_creation_fee"`
+		MaximumBlockSize   int64  `json:"maximum_block_size"`
+		SbdInterestRate    int64  `json:"sbd_interest_rate"`
+	} `json:"props"`
+	RunningVersion  string `json:"running_version"`
+	SbdExchangeRate struct {
+		Base  string `json:"base"`
+		Quote string `json:"quote"`
+	} `json:"sbd_exchange_rate"`
+	SigningKey           string `json:"signing_key"`
+	TotalMissed          int64  `json:"total_missed"`
+	URL                  string `json:"url"`
+	VirtualLastUpdate    string `json:"virtual_last_update"`
+	VirtualPosition      string `json:"virtual_position"`
+	VirtualScheduledTime string `json:"virtual_scheduled_time"`
+	Votes                string `json:"votes"`
+}
+
+func GetWitnesses(client gosteem.Client, witnesses ...string) ([]Witnesses, error) {
+	var resp []Witnesses
+	err := client.Call(MethodGetWitnesses, []interface{}{witnesses}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetConversionRequests(client gosteem.Client, account string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetConversionRequests, []interface{}{account}, &resp)
+
+	return resp, err
+}
+
+func GetWitnessByAccount(client gosteem.Client, account string) (*Witnesses, error) {
+	var resp Witnesses
+	err := client.Call(MethodGetWitnessByAccount, []interface{}{account}, &resp)
+
+	return &resp, err
+}
+
+func GetWitnessesByVote(client gosteem.Client, fromWitness string, limit int) ([]Witnesses, error) {
+	var resp []Witnesses
+	err := client.Call(MethodGetWitnessesByVote, []interface{}{fromWitness, limit}, &resp)
+
+	return resp, err
+}
+
+func LookupWitnessAccounts(client gosteem.Client, lowerBoundName string, limit int) ([]string, error) {
+	var resp []string
+	err := client.Call(MethodLookupWitnessAccounts, []interface{}{lowerBoundName, limit}, &resp)
+
+	return resp, err
+}
+
+func GetWitnessCount(client gosteem.Client) (uint64, error) {
+	var resp uint64
+	err := client.Call(MethodGetWitnessCount, nil, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetOpenOrders(client gosteem.Client, owner string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetOpenOrders, []interface{}{owner}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetTransactionHex(client gosteem.Client, trx string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetTransactionHex, []interface{}{trx}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetTransaction(client gosteem.Client, trxID string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetTransaction, []interface{}{trxID}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetRequiredSignatures(client gosteem.Client, trx string, availableKeys ...string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetRequiredSignatures, []interface{}{trx, availableKeys}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetPotentialSignatures(client gosteem.Client, trx string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetPotentialSignatures, []interface{}{trx}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func VerifyAuthority(client gosteem.Client, trx string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodVerifyAuthority, []interface{}{trx}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func VerifyAccountAuthority(client gosteem.Client, nameOrID string, signers ...string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodVerifyAccountAuthority, []interface{}{nameOrID, signers}, &resp)
+
+	return resp, err
+}
+
+type ActiveVote struct {
+	Percent    int64       `json:"percent"`
+	Reputation interface{} `json:"reputation"` //string or 0
+	Rshares    interface{} `json:"rshares"`    //string or 0
+	Time       string      `json:"time"`
+	Voter      string      `json:"voter"`
+	Weight     interface{} `json:"weight"` //string or 0
+}
+
+func GetActiveVotes(client gosteem.Client, author string, permlink string) ([]ActiveVote, error) {
+	var resp []ActiveVote
+	err := client.Call(MethodGetActiveVotes, []interface{}{author, permlink}, &resp)
+
+	return resp, err
+}
+
+type Vote struct {
+	Authorperm string `json:"authorperm"`
+	Percent    int64  `json:"percent"`
+	Rshares    string `json:"rshares"`
+	Time       string `json:"time"`
+	Weight     int64  `json:"weight"`
+}
+
+func GetAccountVotes(client gosteem.Client, voter string) ([]Vote, error) {
+	var resp []Vote
+	err := client.Call(MethodGetAccountVotes, []interface{}{voter}, &resp)
+
+	return resp, err
+}
+
+type Discussion struct {
+	AbsRshares  interface{} `json:"abs_rshares"`
+	Active      string      `json:"active"`
+	ActiveVotes []struct {
+		Percent    int64  `json:"percent"`
+		Reputation int64  `json:"reputation"`
+		Rshares    int64  `json:"rshares"`
+		Time       string `json:"time"`
+		Voter      string `json:"voter"`
+		Weight     int64  `json:"weight"`
+	} `json:"active_votes"`
+	AllowCurationRewards bool   `json:"allow_curation_rewards"`
+	AllowReplies         bool   `json:"allow_replies"`
+	AllowVotes           bool   `json:"allow_votes"`
+	Author               string `json:"author"`
+	AuthorReputation     string `json:"author_reputation"`
+	AuthorRewards        int64  `json:"author_rewards"`
+	Beneficiaries        []struct {
+		Account string `json:"account"`
+		Weight  int64  `json:"weight"`
+	} `json:"beneficiaries"`
+	Body                    string        `json:"body"`
+	BodyLength              int64         `json:"body_length"`
+	CashoutTime             string        `json:"cashout_time"`
+	Category                string        `json:"category"`
+	Children                int64         `json:"children"`
+	ChildrenAbsRshares      interface{}   `json:"children_abs_rshares"`
+	Created                 string        `json:"created"`
+	CuratorPayoutValue      string        `json:"curator_payout_value"`
+	Depth                   int64         `json:"depth"`
+	ID                      int64         `json:"id"`
+	JSONMetadata            string        `json:"json_metadata"`
+	LastPayout              string        `json:"last_payout"`
+	LastUpdate              string        `json:"last_update"`
+	MaxAcceptedPayout       string        `json:"max_accepted_payout"`
+	MaxCashoutTime          string        `json:"max_cashout_time"`
+	NetRshares              interface{}   `json:"net_rshares"`
+	NetVotes                int64         `json:"net_votes"`
+	ParentAuthor            string        `json:"parent_author"`
+	ParentPermlink          string        `json:"parent_permlink"`
+	PendingPayoutValue      string        `json:"pending_payout_value"`
+	PercentSteemDollars     int64         `json:"percent_steem_dollars"`
+	Permlink                string        `json:"permlink"`
+	Promoted                string        `json:"promoted"`
+	RebloggedBy             []interface{} `json:"reblogged_by"`
+	Replies                 []interface{} `json:"replies"`
+	RewardWeight            int64         `json:"reward_weight"`
+	RootAuthor              string        `json:"root_author"`
+	RootPermlink            string        `json:"root_permlink"`
+	RootTitle               string        `json:"root_title"`
+	Title                   string        `json:"title"`
+	TotalPayoutValue        string        `json:"total_payout_value"`
+	TotalPendingPayoutValue string        `json:"total_pending_payout_value"`
+	TotalVoteWeight         int64         `json:"total_vote_weight"`
+	URL                     string        `json:"url"`
+	VoteRshares             interface{}   `json:"vote_rshares"`
+}
+
+// method is active、blog、cashout、children、comments、created、feed、hot、payout、promoted、trending、update、votes
+func GetDiscussionsBy(client gosteem.Client, method string, params string) ([]Discussion, error) {
+	var resp []Discussion
+
+	if !strings.HasPrefix(method, "get_discussions_by_") {
+		method = "get_discussions_by_" + method
+	}
+
+	err := client.Call(method, []interface{}{params}, &resp)
 
 	return resp, err
 }
