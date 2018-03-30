@@ -51,24 +51,24 @@ var (
 	MethodGetWitnesses                  = "get_witnesses"
 	MethodGetConversionRequests         = "get_conversion_requests"
 
-	MethodGetWitnessByAccount    = "get_witness_by_account"
-	MethodGetWitnessesByVote     = "get_witnesses_by_vote"
-	MethodLookupWitnessAccounts  = "lookup_witness_accounts"
-	MethodGetWitnessCount        = "get_witness_count"
-	MethodGetOpenOrders          = "get_open_orders"
-	MethodGetTransactionHex      = "get_transaction_hex"
-	MethodGetTransaction         = "get_transaction"
-	MethodGetRequiredSignatures  = "get_required_signatures"
-	MethodGetPotentialSignatures = "get_potential_signatures"
-	MethodVerifyAuthority        = "verify_authority"
-	MethodVerifyAccountAuthority = "verify_account_authority"
-	MethodGetActiveVotes         = "get_active_votes"
-	MethodGetAccountVotes        = "get_account_votes"
-	// (get_content)
-	// (get_content_replies)
-	// (get_tags_used_by_author)
-	// (get_post_discussions_by_payout)
-	// (get_comment_discussions_by_payout)
+	MethodGetWitnessByAccount           = "get_witness_by_account"
+	MethodGetWitnessesByVote            = "get_witnesses_by_vote"
+	MethodLookupWitnessAccounts         = "lookup_witness_accounts"
+	MethodGetWitnessCount               = "get_witness_count"
+	MethodGetOpenOrders                 = "get_open_orders"
+	MethodGetTransactionHex             = "get_transaction_hex"
+	MethodGetTransaction                = "get_transaction"
+	MethodGetRequiredSignatures         = "get_required_signatures"
+	MethodGetPotentialSignatures        = "get_potential_signatures"
+	MethodVerifyAuthority               = "verify_authority"
+	MethodVerifyAccountAuthority        = "verify_account_authority"
+	MethodGetActiveVotes                = "get_active_votes"
+	MethodGetAccountVotes               = "get_account_votes"
+	MethodGetContent                    = "get_content"
+	MethodGetContentReplies             = "get_content_replies"
+	MethodGetTagsUsedByAuthor           = "get_tags_used_by_author"
+	MethodGetPostDiscussionsByPayout    = "get_post_discussions_by_payout"
+	MethodGetCommentDiscussionsByPayout = "get_comment_discussions_by_payout"
 
 	// (get_discussions_by_trending)
 	// (get_discussions_by_created)
@@ -86,13 +86,13 @@ var (
 
 	MethodGetAccountHistory = "get_account_history"
 
-	// (broadcast_transaction)
-	// (broadcast_transaction_synchronous)
-	// (broadcast_block)
+	MethodBroadcastTransaction            = "broadcast_transaction"
+	MethodBroadcastTransactionSynchronous = "broadcast_transaction_synchronous"
+	MethodBroadcastBlock                  = "broadcast_block"
 
-	// (get_followers)
-	// (get_following)
-	// (get_follow_count)
+	MethodGetFollowers   = "get_followers"
+	MethodGetFollowing   = "get_following"
+	MethodGetFollowCount = "get_follow_count"
 
 	// (get_feed_entries)
 	// (get_feed)
@@ -773,3 +773,164 @@ func GetDiscussionsBy(client gosteem.Client, method string, params string) ([]Di
 
 	return resp, err
 }
+
+type Content struct {
+	AbsRshares              int64            `json:"abs_rshares"`
+	Active                  string           `json:"active"`
+	ActiveVotes             []ActiveVote     `json:"active_votes"`
+	AllowCurationRewards    bool             `json:"allow_curation_rewards"`
+	AllowReplies            bool             `json:"allow_replies"`
+	AllowVotes              bool             `json:"allow_votes"`
+	Author                  string           `json:"author"`
+	AuthorReputation        string           `json:"author_reputation"`
+	AuthorRewards           int64            `json:"author_rewards"`
+	Beneficiaries           *ArrayRawMessage `json:"beneficiaries"`
+	Body                    string           `json:"body"`
+	BodyLength              int64            `json:"body_length"`
+	CashoutTime             string           `json:"cashout_time"`
+	Category                string           `json:"category"`
+	Children                int64            `json:"children"`
+	ChildrenAbsRshares      int64            `json:"children_abs_rshares"`
+	Created                 string           `json:"created"`
+	CuratorPayoutValue      string           `json:"curator_payout_value"`
+	Depth                   int64            `json:"depth"`
+	ID                      int64            `json:"id"`
+	JSONMetadata            string           `json:"json_metadata"`
+	LastPayout              string           `json:"last_payout"`
+	LastUpdate              string           `json:"last_update"`
+	MaxAcceptedPayout       string           `json:"max_accepted_payout"`
+	MaxCashoutTime          string           `json:"max_cashout_time"`
+	NetRshares              int64            `json:"net_rshares"`
+	NetVotes                int64            `json:"net_votes"`
+	ParentAuthor            string           `json:"parent_author"`
+	ParentPermlink          string           `json:"parent_permlink"`
+	PendingPayoutValue      string           `json:"pending_payout_value"`
+	PercentSteemDollars     int64            `json:"percent_steem_dollars"`
+	Permlink                string           `json:"permlink"`
+	Promoted                string           `json:"promoted"`
+	RebloggedBy             *ArrayRawMessage `json:"reblogged_by"`
+	Replies                 *ArrayRawMessage `json:"replies"`
+	RewardWeight            int64            `json:"reward_weight"`
+	RootAuthor              string           `json:"root_author"`
+	RootPermlink            string           `json:"root_permlink"`
+	RootTitle               string           `json:"root_title"`
+	Title                   string           `json:"title"`
+	TotalPayoutValue        string           `json:"total_payout_value"`
+	TotalPendingPayoutValue string           `json:"total_pending_payout_value"`
+	TotalVoteWeight         int64            `json:"total_vote_weight"`
+	URL                     string           `json:"url"`
+	VoteRshares             int64            `json:"vote_rshares"`
+}
+
+func GetContent(client gosteem.Client, author, permlink string) (*Content, error) {
+	var resp = &Content{}
+	err := client.Call(MethodGetContent, []interface{}{author, permlink}, resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetContentReplies(client gosteem.Client, author, permlink string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetContentReplies, []interface{}{author, permlink}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetTagsUsedByAuthor(client gosteem.Client, author string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetTagsUsedByAuthor, []interface{}{author}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetPostDiscussionsByPayout(client gosteem.Client, query string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetPostDiscussionsByPayout, []interface{}{query}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetCommentDiscussionsByPayout(client gosteem.Client, query string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetCommentDiscussionsByPayout, []interface{}{query}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func BroadcastTransaction(client gosteem.Client, trx string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodBroadcastTransaction, []interface{}{trx}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func BroadcastTransactionSynchronous(client gosteem.Client, trx string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodBroadcastTransactionSynchronous, []interface{}{trx}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func BroadcastBlock(client gosteem.Client, b string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodBroadcastBlock, []interface{}{b}, &resp)
+
+	return resp, err
+}
+
+type Follow struct {
+	Follower  string   `json:"follower"`
+	Following string   `json:"following"`
+	What      []string `json:"what"`
+}
+
+func GetFollowers(client gosteem.Client, following, startFollower, followType string, limit int) ([]Follow, error) {
+	var resp []Follow
+	err := client.Call(MethodGetFollowers, []interface{}{following, startFollower, followType, limit}, &resp)
+
+	return resp, err
+}
+
+func GetFollowing(client gosteem.Client, following, startFollower, followType string, limit int) ([]Follow, error) {
+	var resp []Follow
+	err := client.Call(MethodGetFollowing, []interface{}{following, startFollower, followType, limit}, &resp)
+
+	return resp, err
+}
+
+type FollowCount struct {
+	Account        string `json:"account"`
+	FollowerCount  uint64 `json:"follower_count"`
+	FollowingCount uint64 `json:"following_count"`
+}
+
+func GetFollowCount(client gosteem.Client, account string) (followerCount uint64, followingCount uint64, err error) {
+	var resp FollowCount
+	err = client.Call(MethodGetFollowCount, []interface{}{account}, &resp)
+
+	return resp.FollowerCount, resp.FollowingCount, err
+}
+
+// (get_feed_entries)
+// (get_feed)
+
+// (get_blog_entries)
+// (get_blog)
+// (get_account_reputations)
+// (get_reblogged_by)
+// (get_blog_authors)
+
+// (get_ticker)
+// (get_volume)
+// (get_order_book)
+// (get_trade_history)
+// (get_recent_trades)
+// (get_market_history)
+// (get_market_history_buckets)

@@ -80,5 +80,6 @@ func (c *HTTPClient) Call(method string, params, result interface{}) error {
 	if string(res.Result) == "[]" || string(res.Result) == "[[]]" {
 		return nil
 	}
+
 	return json.Unmarshal(res.Result, result)
 }

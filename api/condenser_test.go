@@ -254,3 +254,30 @@ func TestGetAccountVotes(t *testing.T) {
 
 	t.Logf("%s: %+v", MethodGetWitnessCount, resp)
 }
+
+func TestGetContent(t *testing.T) {
+	resp, err := GetContent(client, "smooth", "test")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%s: %+v", MethodGetContent, resp)
+}
+
+func TestGetFollowers(t *testing.T) {
+	resp, err := GetFollowers(client, "good-karma", "fabien", "post", 10)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%s: %+v", MethodGetFollowers, resp)
+}
+
+func TestGetFollowCount(t *testing.T) {
+	c1, c2, err := GetFollowCount(client, "good-karma")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%s: %d, %d", MethodGetFollowers, c1, c2)
+}

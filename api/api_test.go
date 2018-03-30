@@ -7,6 +7,7 @@ import (
 )
 
 var (
+	//testAPIAddress = "https://api.steemit.com"
 	testAPIAddress = "https://api.steemit.com"
 	client         = gosteem.NewHTTPClient(testAPIAddress, 10*time.Second)
 )
