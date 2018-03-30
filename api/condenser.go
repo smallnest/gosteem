@@ -94,18 +94,19 @@ var (
 	MethodGetFollowing   = "get_following"
 	MethodGetFollowCount = "get_follow_count"
 
-	// (get_feed_entries)
-	// (get_feed)
+	MethodGetFeedEntries = "get_feed_entries"
+	MethodGetFeed        = "get_feed"
 
-	// (get_blog_entries)
-	// (get_blog)
-	// (get_account_reputations)
-	// (get_reblogged_by)
-	// (get_blog_authors)
+	MethodGetBlogEntries = "get_blog_entries"
+	MethodGetBlog        = "get_blog"
+	MethodGetBlogAuthors = "get_blog_authors"
 
-	// (get_ticker)
-	// (get_volume)
-	// (get_order_book)
+	MethodGetAccountReputations = "get_account_reputations"
+	MethodGetRebloggedBy        = "get_reblogged_by"
+
+	MethodGetTicker      = "get_ticker"
+	MethodGetVolume      = "get_volume"
+	Methodget_order_book = "get_order_book"
 	// (get_trade_history)
 	// (get_recent_trades)
 	// (get_market_history)
@@ -918,14 +919,65 @@ func GetFollowCount(client gosteem.Client, account string) (followerCount uint64
 	return resp.FollowerCount, resp.FollowingCount, err
 }
 
-// (get_feed_entries)
-// (get_feed)
+// TODO: don't know response format
+func GetFeedEntries(client gosteem.Client, account string, entryID, limit int) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetFeedEntries, []interface{}{account, entryID, limit}, &resp)
 
-// (get_blog_entries)
-// (get_blog)
-// (get_account_reputations)
-// (get_reblogged_by)
-// (get_blog_authors)
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetFeed(client gosteem.Client, account string, entryID, limit int) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetFeed, []interface{}{account, entryID, limit}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetBlogEntries(client gosteem.Client, account string, entryID, limit int) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetBlogEntries, []interface{}{account, entryID, limit}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetBlog(client gosteem.Client, account string, entryID, limit int) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetBlog, []interface{}{account, entryID, limit}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetBlogAuthors(client gosteem.Client, account string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetBlogAuthors, []interface{}{account}, &resp)
+
+	return resp, err
+}
+
+type Reputation struct {
+	Account    string `json:"account"`
+	Reputation int64  `json:"reputation"`
+}
+
+func GetAccountReputations(client gosteem.Client, account string, limit int) ([]Reputation, error) {
+	var resp []Reputation
+	err := client.Call(MethodGetAccountReputations, []interface{}{account, limit}, &resp)
+
+	return resp, err
+}
+
+// TODO: don't know response format
+func GetRebloggedBy(client gosteem.Client, author, permlink string) (json.RawMessage, error) {
+	var resp json.RawMessage
+	err := client.Call(MethodGetRebloggedBy, []interface{}{author, permlink}, &resp)
+
+	return resp, err
+}
 
 // (get_ticker)
 // (get_volume)

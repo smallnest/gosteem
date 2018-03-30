@@ -281,3 +281,12 @@ func TestGetFollowCount(t *testing.T) {
 
 	t.Logf("%s: %d, %d", MethodGetFollowers, c1, c2)
 }
+
+func TestGetAccountReputations(t *testing.T) {
+	resp, err := GetAccountReputations(client, "good-karma", 10)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%s: %+v", MethodGetFollowers, resp)
+}
