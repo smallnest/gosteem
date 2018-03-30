@@ -104,13 +104,13 @@ var (
 	MethodGetAccountReputations = "get_account_reputations"
 	MethodGetRebloggedBy        = "get_reblogged_by"
 
-	MethodGetTicker      = "get_ticker"
-	MethodGetVolume      = "get_volume"
-	Methodget_order_book = "get_order_book"
-	// (get_trade_history)
-	// (get_recent_trades)
-	// (get_market_history)
-	// (get_market_history_buckets)
+	MethodGetTicker               = "get_ticker"
+	MethodGetVolume               = "get_volume"
+	MethodGetOrderBook            = "get_order_book"
+	MethodGetTradeHistory         = "get_trade_history"
+	MethodGetRecentTrades         = "get_recent_trades"
+	MethodGetMarketHistory        = "get_market_history"
+	MethodGetMarketHistoryBuckets = "get_market_history_buckets"
 )
 
 var tagMethods = map[string]string{
@@ -979,10 +979,36 @@ func GetRebloggedBy(client gosteem.Client, author, permlink string) (json.RawMes
 	return resp, err
 }
 
-// (get_ticker)
-// (get_volume)
-// (get_order_book)
-// (get_trade_history)
-// (get_recent_trades)
-// (get_market_history)
-// (get_market_history_buckets)
+type Ticker struct {
+	HighestBid    string `json:"highest_bid"`
+	Latest        string `json:"latest"`
+	LowestAsk     string `json:"lowest_ask"`
+	PercentChange string `json:"percent_change"`
+	SbdVolume     string `json:"sbd_volume"`
+	SteemVolume   string `json:"steem_volume"`
+}
+
+func GetTicker(client gosteem.Client) (*Ticker, error) {
+	var resp = &Ticker{}
+	err := client.Call(MethodGetTicker, nil, resp)
+
+	return resp, err
+}
+
+type Volume struct {
+	SbdVolume   string `json:"sbd_volume"`
+	SteemVolume string `json:"steem_volume"`
+}
+
+func GetVolume(client gosteem.Client) (sbdVolume string, steemVolume string, err error) {
+	var resp = &Volume{}
+	err = client.Call(MethodGetVolume, nil, resp)
+
+	return resp.SbdVolume, resp.SteemVolume, err
+}
+
+// 	MethodGetOrderBook            = "get_order_book"
+// 	MethodGetTradeHistory         = "get_trade_history"
+// 	MethodGetRecentTrades         = "get_recent_trades"
+// 	MethodGetMarketHistory        = "get_market_history"
+// 	MethodGetMarketHistoryBuckets = "get_market_history_buckets"

@@ -279,7 +279,7 @@ func TestGetFollowCount(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	t.Logf("%s: %d, %d", MethodGetFollowers, c1, c2)
+	t.Logf("%s: %d, %d", MethodGetFollowCount, c1, c2)
 }
 
 func TestGetAccountReputations(t *testing.T) {
@@ -288,5 +288,23 @@ func TestGetAccountReputations(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	t.Logf("%s: %+v", MethodGetFollowers, resp)
+	t.Logf("%s: %+v", MethodGetAccountReputations, resp)
+}
+
+func TestGetTicker(t *testing.T) {
+	resp, err := GetTicker(client)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%s: %+v", MethodGetTicker, resp)
+}
+
+func TestGetVolume(t *testing.T) {
+	v1, v2, err := GetVolume(client)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%s: %s, %s", MethodGetVolume, v1, v2)
 }
